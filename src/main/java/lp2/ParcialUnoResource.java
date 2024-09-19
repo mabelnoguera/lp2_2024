@@ -29,13 +29,17 @@ public class ParcialUnoResource {
             }
             number++;
         }
-        return Response.ok( primes).build();
+        return Response.ok(primes).build();
     }
 
     private boolean isPrime(int num) {
-        if (num <= 1) return false;
+        if (num <= 1) {
+            return false;
+        }
         for (int i = 2; i <= Math.sqrt(num); i++) {
-            if (num % i == 0) return false;
+            if (num % i == 0) {
+                return false;
+            }
         }
         return true;
     }
@@ -72,9 +76,16 @@ public class ParcialUnoResource {
     @POST
     @Path("/sort")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sort(int[] numbers) {
-        bubbleSort(numbers);
-        return Response.ok(numbers).build();
+    public Response sort(Map<String, Object> request) {
+        Object numbersObj = request.get("numbers");
+        if (numbersObj instanceof List<?>) {
+            List<?> numbersList = (List<?>) numbersObj;
+            int[] numbers = numbersList.stream().map(Number.class::cast).mapToInt(Number::intValue).toArray();
+            bubbleSort(numbers);
+            return Response.ok(numbers).build();
+        }
+
+        return Response.status(404).build();
     }
 
     private void bubbleSort(int[] array) {
@@ -90,7 +101,7 @@ public class ParcialUnoResource {
                     swapped = true;
                 }
             }
-            
+
             if (!swapped) {
                 break;
             }
@@ -152,7 +163,7 @@ public class ParcialUnoResource {
         }
 
         int sum = 0;
-        
+
         for (int i = 1; i <= number / 2; i++) {
             if (number % i == 0) {
                 sum += i;
@@ -179,4 +190,82 @@ public class ParcialUnoResource {
         return result;
     }
 
+    @POST
+    @Path("/sum-array")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sumArray(Map<String, Object> request) {
+        Object numbersObj = request.get("numbers");
+        if (numbersObj instanceof List<?>) {
+            List<?> numbersList = (List<?>) numbersObj;
+            int[] numbers = numbersList.stream().map(Number.class::cast).mapToInt(Number::intValue).toArray();
+            int sum = sumArray(numbers);
+            return Response.ok("Suma de todos los elementos: " + sum).build();
+        }
+
+        return Response.status(404).build();
+    }
+
+    public int sumArray(int[] array) {
+        int sum = 0;
+        for (int num : array) {
+            sum += num;
+        }
+        return sum;
+    }
+
+    @POST
+    @Path("/mcd")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response mcd(Map<String, Object> request) {
+        Object number1Obj = request.get("number1");
+        Object number2Obj = request.get("number2");
+
+        int number1;
+        int number2;
+
+        number1 = Integer.parseInt(number1Obj.toString());
+        number2 = Integer.parseInt(number2Obj.toString());
+
+        int mcd = mcd(number1, number2);
+
+        return Response.ok("Resultado: " + mcd).build();
+    }
+
+    public int mcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    @GET
+    @Path("/armstrong/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response armstrong(@PathParam("number") int number) {
+        boolean isArmstrong = isArmstrongNumber(number);
+        return Response.ok("Es numero armstrong: " + isArmstrong).build();
+    }
+
+    public static boolean isArmstrongNumber(int number) {
+        String numStr = Integer.toString(number);
+        int numDigits = numStr.length();
+        int sum = 0;
+
+        for (char digitChar : numStr.toCharArray()) {
+            int digit = Character.getNumericValue(digitChar);
+            sum += Math.pow(digit, numDigits);
+        }
+
+        return sum == number;
+    }
+
+    @GET
+    @Path("/convert-to-binary/{number}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response convertToBinary(@PathParam("number") int number) {
+        String binary = Integer.toBinaryString(number);
+        return Response.ok("Binario: " + binary).build();
+    }
 }
