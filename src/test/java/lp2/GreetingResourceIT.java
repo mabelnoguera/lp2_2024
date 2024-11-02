@@ -1,4 +1,4 @@
-package lp2.2024;
+package lp2;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

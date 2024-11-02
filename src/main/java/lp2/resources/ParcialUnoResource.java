@@ -1,4 +1,4 @@
-package lp2;
+package lp2.resources;
 
 import java.util.ArrayList;
 import java.util.List;
