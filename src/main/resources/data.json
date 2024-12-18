@@ -1,0 +1,4 @@
+[
+    {"id": 1, "descripcion": "Comida", "monto": 550000, "fecha": [2024, 12, 17]},
+    {"id": 2, "descripcion": "Gym", "monto": 120000, "fecha": [2024, 12, 18]}
+]
