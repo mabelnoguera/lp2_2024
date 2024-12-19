@@ -22,4 +22,16 @@ public class GastoService {
         Gasto data = repository.obtenerGastoPorId(id);
         return data;
     }
+
+    public void guardarGasto(Gasto param){
+        repository.guardarGasto(param);
+    } 
+    
+    public void editarGasto(Gasto param){
+        repository.editarGasto(param);
+    }
+    
+    public void eliminarGasto(Integer id){
+        repository.eliminarGasto(id);
+    }
 }

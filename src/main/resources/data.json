@@ -1,4 +1,1 @@
-[
-    {"id": 1, "descripcion": "Comida", "monto": 550000, "fecha": [2024, 12, 17]},
-    {"id": 2, "descripcion": "Gym", "monto": 120000, "fecha": [2024, 12, 18]}
-]
+[{"id":1,"descripcion":"Comida","monto":550000.0,"fecha":[2024,12,17]},{"id":2,"descripcion":"Gym","monto":120000.0,"fecha":[2024,12,18]},{"id":3,"descripcion":"Creatina","monto":264000.0,"fecha":[2024,12,19]}]
