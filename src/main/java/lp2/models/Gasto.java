@@ -3,6 +3,7 @@ package lp2.models;
 import java.time.LocalDate;
 
 public class Gasto {
+
     public Integer id;
     public String descripcion;
     public double monto;

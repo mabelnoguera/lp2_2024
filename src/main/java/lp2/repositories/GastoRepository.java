@@ -2,8 +2,11 @@ package lp2.repositories;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,6 +18,7 @@ import lp2.models.Gasto;
 
 @ApplicationScoped
 public class GastoRepository {
+
     private static final String FILE_PATH = "src/main/resources/data.json";
     private ObjectMapper mapper;
     private List<Gasto> lista;
@@ -30,10 +34,10 @@ public class GastoRepository {
             File data = new File(FILE_PATH);
             if (data.exists()) {
                 return mapper.readValue(data, new TypeReference<List<Gasto>>() {
-            });
-        } else {
-            return new ArrayList<>();
-        }
+                });
+            } else {
+                return new ArrayList<>();
+            }
 
         } catch (IOException e) {
             return new ArrayList<>();
@@ -46,20 +50,20 @@ public class GastoRepository {
 
     public Gasto obtenerGastoPorId(Integer id) {
         return lista.stream()
-            .filter(item -> item.getId().equals(id))
-            .findFirst()
-            .orElse(null);
+                .filter(item -> item.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     public void guardarGasto(Gasto param) {
         try {
-          List<Gasto> newLista = this.lista;
-          Gasto existeGasto = obtenerGastoPorId(param.getId());
-          if (existeGasto == null) {
+            List<Gasto> newLista = this.lista;
+            Gasto existeGasto = obtenerGastoPorId(param.getId());
+            if (existeGasto == null) {
                 newLista.add(param);
                 mapper.writeValue(new File(FILE_PATH), newLista);
-          }
-    
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,14 +71,14 @@ public class GastoRepository {
 
     public void editarGasto(Gasto param) {
         try {
-          Gasto existeGasto = obtenerGastoPorId(param.getId());
-          if (existeGasto != null) {
-            int index = lista.indexOf(existeGasto);
-            if (index >= 0) {
-                lista.set(index, param);
-                mapper.writeValue(new File(FILE_PATH), lista);
+            Gasto existeGasto = obtenerGastoPorId(param.getId());
+            if (existeGasto != null) {
+                int index = lista.indexOf(existeGasto);
+                if (index >= 0) {
+                    lista.set(index, param);
+                    mapper.writeValue(new File(FILE_PATH), lista);
+                }
             }
-          }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,12 +86,52 @@ public class GastoRepository {
 
     public void eliminarGasto(Integer id) {
         lista = lista.stream()
-            .filter(item -> !item.getId().equals(id))
-            .collect(Collectors.toList());
+                .filter(item -> !item.getId().equals(id))
+                .collect(Collectors.toList());
         try {
-        mapper.writeValue(new File(FILE_PATH), lista);
+            mapper.writeValue(new File(FILE_PATH), lista);
         } catch (Exception e) {
-        e.printStackTrace();
+            e.printStackTrace();
+        }
     }
-  }
+
+    public double obtenerPromedioGastoPorDia() {
+        try {
+            Map<LocalDate, Double> gastoPorFecha = new HashMap<>();
+
+            for (Gasto gasto : lista) {
+                LocalDate fecha = gasto.getFecha();
+                double cantidad = gasto.getMonto();
+
+                gastoPorFecha.put(fecha, gastoPorFecha.getOrDefault(fecha, 0.0) + cantidad);
+            }
+
+            double totalGasto = 0;
+            for (double total : gastoPorFecha.values()) {
+                totalGasto += total;
+            }
+
+            int diasDistintos = gastoPorFecha.size();
+
+            if (diasDistintos == 0) {
+                return 0;
+            }
+
+            return totalGasto / diasDistintos;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public List<Gasto> obtenerGastosPorRango(LocalDate fechaInicio, LocalDate fechaFin) {
+        try {
+            return lista.stream()
+                    .filter(gasto -> !gasto.getFecha().isBefore(fechaInicio) && !gasto.getFecha().isAfter(fechaFin))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }
